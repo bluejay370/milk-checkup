@@ -249,6 +249,15 @@ body:not(.form-mode) .toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
     <h2 class="step-h"><span class="step-n">2</span>After steaming</h2>
 
     <div class="metric">
+      <label class="lbl" for="temp">Final temp</label>
+      <div class="metric-row">
+        <div class="num-in"><input id="temp" type="text" inputmode="decimal" autocomplete="off" placeholder="000"><span class="unit">°F</span></div>
+        <span class="chip" id="vTemp"></span>
+      </div>
+      <div id="gTemp"></div>
+    </div>
+
+    <div class="metric">
       <label class="lbl" for="steamed">Steamed volume</label>
       <div class="metric-row">
         <div class="num-in"><input id="steamed" type="text" inputmode="decimal" autocomplete="off" placeholder="0.0"><span class="unit">oz</span></div>
@@ -263,15 +272,6 @@ body:not(.form-mode) .toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
       </div>
       <div id="gAer"></div>
       <p class="hint" id="aerNote"></p>
-    </div>
-
-    <div class="metric">
-      <label class="lbl" for="temp">Final temp</label>
-      <div class="metric-row">
-        <div class="num-in"><input id="temp" type="text" inputmode="decimal" autocomplete="off" placeholder="000"><span class="unit">°F</span></div>
-        <span class="chip" id="vTemp"></span>
-      </div>
-      <div id="gTemp"></div>
     </div>
 
     <div id="ch-hygiene"></div>
