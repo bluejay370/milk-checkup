@@ -349,9 +349,9 @@ var GAUGES = {
   temp:{min:130, max:160,
     zones:[[130,140,'needs'],[140,143,'close'],[143,147,'just'],[147,150,'close'],[150,160,'needs']],
     ticks:[[140,'140'],[143,'143'],[147,'147'],[150,'150']]},
-  aer:{min:15, max:45,
-    zones:[[15,24.5,'needs'],[24.5,28.5,'close'],[28.5,31.5,'just'],[31.5,35.5,'close'],[35.5,45,'needs']],
-    ticks:[[24.5,'25'],[28.5,'29'],[31.5,'31'],[35.5,'35']]},
+  aer:{min:10, max:45,
+    zones:[[10,19.5,'needs'],[19.5,24.5,'close'],[24.5,30.5,'just'],[30.5,35.5,'close'],[35.5,45,'needs']],
+    ticks:[[19.5,'20'],[24.5,'25'],[30.5,'30'],[35.5,'35']]},
   waste:{min:0, max:5,
     zones:[[0,2,'just'],[2,3,'close'],[3,5,'needs']],
     ticks:[[2,'2'],[3,'3']]}
@@ -401,8 +401,8 @@ function aerPct(c,s){
 }
 function tierAer(p){
   if(p == null) return null;
-  if(p < 25 || p > 35) return 'needs';
-  if(p >= 29 && p <= 31) return 'just';
+  if(p < 20 || p > 35) return 'needs';
+  if(p >= 25 && p <= 30) return 'just';
   return 'close';
 }
 function tierWaste(w){
@@ -493,10 +493,10 @@ function update(){
 
   var c = f.coldOz;
   if(c != null && c > 0){
-    var lo = Math.ceil(c / 0.71 * 10) / 10, hi = Math.floor(c / 0.69 * 10) / 10;
-    $('#coldHint').textContent = 'Steam to ' + lo.toFixed(1) + '\u2013' + hi.toFixed(1) + ' oz for 29\u201331% aeration.';
+    var lo = Math.ceil(c / 0.75 * 10 - 1e-9) / 10, hi = Math.floor(c / 0.70 * 10 + 1e-9) / 10;
+    $('#coldHint').textContent = 'Steam to ' + lo.toFixed(1) + '\u2013' + hi.toFixed(1) + ' oz for 25\u201330% aeration.';
   } else {
-    $('#coldHint').textContent = 'For 30% aeration in a 16 oz cup, start with about 11.2 oz.';
+    $('#coldHint').textContent = 'For 25\u201330% aeration in a 16 oz cup, start with 11.2\u201312.0 oz.';
   }
 
   var p = aerPct(f.coldOz, f.steamedOz);
