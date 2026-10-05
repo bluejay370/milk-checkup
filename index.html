@@ -1,0 +1,865 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Milk check</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Milk check">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
+<style>
+:root{
+  --bg:#E8ECEE;
+  --surface:#FFFFFF;
+  --sunk:#F1F4F5;
+  --ink:#16232A;
+  --muted:#56656D;
+  --line:#CAD3D7;
+  --accent:#1E5467;
+  --accent-ink:#FFFFFF;
+  --just:#22704C; --just-tint:#D9EEE2; --just-zone:#5DB487;
+  --close:#865704; --close-tint:#F5E7C6; --close-zone:#E5C266;
+  --needs:#A33424; --needs-tint:#F6DBD5; --needs-zone:#E39586;
+  --font-body:"Barlow", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display:"Barlow Semi Condensed", "Barlow", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11181C; --surface:#1A242A; --sunk:#151E23; --ink:#E5ECEF; --muted:#9AAAB2; --line:#2E3C43;
+    --accent:#7CC0D6; --accent-ink:#0E1A1F;
+    --just:#78D0A0; --just-tint:#17352A; --just-zone:#3E9A6D;
+    --close:#EBB955; --close-tint:#3A2E12; --close-zone:#A07D2C;
+    --needs:#F28B7A; --needs-tint:#401F1A; --needs-zone:#A24F42;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11181C; --surface:#1A242A; --sunk:#151E23; --ink:#E5ECEF; --muted:#9AAAB2; --line:#2E3C43;
+  --accent:#7CC0D6; --accent-ink:#0E1A1F;
+  --just:#78D0A0; --just-tint:#17352A; --just-zone:#3E9A6D;
+  --close:#EBB955; --close-tint:#3A2E12; --close-zone:#A07D2C;
+  --needs:#F28B7A; --needs-tint:#401F1A; --needs-zone:#A24F42;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none !important}
+html{background:var(--bg);scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.45}
+body.form-mode{padding-bottom:96px}
+h1,h2{font-family:var(--font-display);margin:0;line-height:1.15}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:560px;margin:0 auto;padding-left:16px;padding-right:16px}
+
+/* Header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--bg);border-bottom:1px solid var(--line);box-shadow:0 calc(-1 * env(safe-area-inset-top,0px)) 0 var(--bg)}
+.top-inner{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding-top:14px;padding-bottom:10px}
+.top h1{font-size:28px;font-weight:700;letter-spacing:-.01em}
+.sub{margin:2px 0 0;color:var(--muted);font-size:15px}
+.sync{font-size:13px;color:var(--muted);text-align:right;flex:none}
+.sync.is-warn{color:var(--close);font-weight:600}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding-bottom:12px}
+.tab{appearance:none;-webkit-appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;font-weight:600;font-size:16px;cursor:pointer;min-height:44px}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* Form */
+.block{padding:22px 0 4px;border-top:1px solid var(--line)}
+.block-first{border-top:0;padding-top:18px}
+.step-h{display:flex;align-items:baseline;gap:10px;font-size:22px;font-weight:600;margin-bottom:16px}
+.step-n{color:var(--accent);font-weight:700}
+.who{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-bottom:18px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.lbl{font-size:15px;font-weight:500;color:var(--muted)}
+.in{width:100%;min-height:48px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:17px}
+input[type="date"].in{-webkit-appearance:none;appearance:none;display:block;text-align:left}
+input[type="date"].in::-webkit-date-and-time-value{text-align:left}
+textarea.in{min-height:96px;resize:vertical;line-height:1.4}
+.err{color:var(--needs);font-size:14px;margin:0}
+.hint{color:var(--muted);font-size:15px;margin:0}
+
+.editing{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding:10px 14px;border-radius:12px;background:var(--sunk);border:1px dashed var(--accent);font-size:15px}
+.editing b{font-weight:600}
+
+.metric{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.metric-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.num-in{display:flex;align-items:baseline;gap:6px;width:150px;padding:4px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.num-in:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+.num-in input{width:100%;min-width:0;border:0;background:transparent;font-family:var(--font-display);font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;padding:2px 0;outline:none}
+.num-in input::placeholder{color:var(--line)}
+.unit{color:var(--muted);font-size:16px;font-weight:500}
+.computed{font-family:var(--font-display);font-size:34px;font-weight:600;font-variant-numeric:tabular-nums;min-width:150px;line-height:1.2}
+
+/* Gauge */
+.track{position:relative;height:22px}
+.bar{position:absolute;left:0;right:0;top:6px;height:10px;border-radius:5px;overflow:hidden;background:var(--sunk)}
+.zone{position:absolute;top:0;bottom:0}
+.zone + .zone{border-left:2px solid var(--bg)}
+.z-needs{background:var(--needs-zone)}
+.z-close{background:var(--close-zone)}
+.z-just{background:var(--just-zone)}
+.marker{position:absolute;top:0;width:4px;height:22px;margin-left:-2px;border-radius:2px;background:var(--ink);box-shadow:0 0 0 2px var(--bg);transition:left .2s ease}
+.ticks{position:relative;height:16px;margin-top:2px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tick{position:absolute;top:0;transform:translateX(-50%)}
+@media (prefers-reduced-motion: reduce){.marker{transition:none}}
+
+/* Choices */
+.choice{border:0;margin:0 0 24px;padding:0;min-width:0}
+.choice legend{display:block;width:100%;padding:0;margin-bottom:10px}
+.lg{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.lg-name{font-family:var(--font-display);font-size:20px;font-weight:600}
+.lg-prio{font-size:14px;color:var(--muted);text-align:right}
+.opts{border:1px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;cursor:pointer;border-top:1px solid var(--line)}
+.opt:first-child{border-top:0}
+.opt input{margin:3px 0 0;width:20px;height:20px;flex:none;accent-color:var(--accent)}
+.opt-tier{display:block;font-weight:600;font-size:16px}
+.opt-desc{display:block;color:var(--muted);font-size:15px;line-height:1.35}
+.opt[data-tier="needs"] .opt-tier{color:var(--needs)}
+.opt[data-tier="close"] .opt-tier{color:var(--close)}
+.opt[data-tier="just"] .opt-tier{color:var(--just)}
+.opt.is-on[data-tier="needs"]{background:var(--needs-tint);box-shadow:inset 4px 0 0 var(--needs)}
+.opt.is-on[data-tier="close"]{background:var(--close-tint);box-shadow:inset 4px 0 0 var(--close)}
+.opt.is-on[data-tier="just"]{background:var(--just-tint);box-shadow:inset 4px 0 0 var(--just)}
+.opt.is-on .opt-desc{color:var(--ink)}
+
+/* Buttons */
+.btn{appearance:none;-webkit-appearance:none;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 16px;font-weight:600;font-size:16px;min-height:44px;cursor:pointer}
+.btn-primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);min-width:150px;min-height:48px;font-size:17px}
+.btn:disabled{opacity:.55;cursor:default}
+.btn-danger{color:var(--needs)}
+.btn-danger.is-armed{background:var(--needs);color:var(--surface);border-color:var(--needs)}
+.btn-small{min-height:36px;padding:6px 12px;font-size:15px}
+
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+.savebar-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.progress{color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums}
+
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:500;font-size:15px;max-width:calc(100% - 32px);width:max-content;z-index:20;opacity:0;pointer-events:none;transition:opacity .2s}
+body:not(.form-mode) .toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+.toast.show{opacity:1}
+.toast.is-err{background:var(--needs);color:var(--surface)}
+
+/* History */
+.hist-tools{display:flex;align-items:flex-end;gap:12px;padding-top:18px}
+.hist-tools .field{flex:1}
+.hist-meta{color:var(--muted);font-size:15px;margin:14px 0 10px}
+.hist{list-style:none;margin:0 0 40px;padding:0;display:flex;flex-direction:column;gap:10px}
+.rec{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.rec-head{appearance:none;-webkit-appearance:none;display:block;width:100%;text-align:left;background:transparent;border:0;padding:12px 14px;cursor:pointer}
+.rec-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px}
+.rec-name{font-family:var(--font-display);font-size:20px;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rec-date{color:var(--muted);font-size:15px;white-space:nowrap}
+.minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.mini{display:flex;flex-direction:column;padding:6px 7px;border-radius:8px;background:var(--sunk);min-width:0}
+.mini-l{font-size:12px;color:var(--muted)}
+.mini-v{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+.rec-detail{padding:2px 14px 14px;border-top:1px solid var(--line)}
+.rec-detail dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:12px 0 14px;font-size:15px}
+.rec-detail dt{color:var(--muted)}
+.rec-detail dd{margin:0;font-variant-numeric:tabular-nums;white-space:pre-wrap;overflow-wrap:anywhere}
+.rec-actions{display:flex;gap:10px}
+.pending{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--close-tint);color:var(--close);font-weight:600;font-size:15px}
+.device-note{color:var(--muted);font-size:14px;margin:14px 0 0}
+.empty{padding:28px 0}
+.empty p{margin:0 0 14px;color:var(--muted)}
+
+/* Tier colors (kept last so they win over base backgrounds) */
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;font-weight:600;font-size:15px}
+.chip:empty{display:none}
+.t-just{background:var(--just-tint);color:var(--just)}
+.t-close{background:var(--close-tint);color:var(--close)}
+.t-needs{background:var(--needs-tint);color:var(--needs)}
+.mini.t-just .mini-l,.mini.t-close .mini-l,.mini.t-needs .mini-l{color:inherit;opacity:.85}
+
+@media (max-width:360px){
+  .who{grid-template-columns:1fr}
+  .num-in{width:132px}
+}
+</style>
+</head>
+<body class="form-mode">
+
+<header class="top">
+  <div class="wrap top-inner">
+    <div>
+      <h1>Milk check</h1>
+      <p class="sub">Medium latte, 16 oz</p>
+    </div>
+    <span id="sync" class="sync" aria-live="polite"></span>
+  </div>
+  <nav class="wrap tabs" role="tablist" aria-label="Views">
+    <button class="tab" id="tabForm" role="tab" aria-selected="true" aria-controls="formView">New check</button>
+    <button class="tab" id="tabHistory" role="tab" aria-selected="false" aria-controls="historyView">History <span id="histCount"></span></button>
+  </nav>
+</header>
+
+<main id="formView" class="wrap" role="tabpanel" aria-labelledby="tabForm">
+  <div id="editBanner" class="editing" hidden>
+    <span>Editing <b id="editWho"></b></span>
+    <button type="button" class="btn btn-small" id="cancelEdit">Cancel</button>
+  </div>
+
+  <section class="block block-first">
+    <div class="who">
+      <label class="field">
+        <span class="lbl">Barista</span>
+        <input class="in" id="barista" list="baristaList" autocomplete="off" autocapitalize="words" spellcheck="false" enterkeyhint="next">
+      </label>
+      <label class="field">
+        <span class="lbl">Date</span>
+        <input class="in" id="date" type="date">
+      </label>
+    </div>
+    <p class="err" id="nameErr" hidden>Add the barista's name to save this check.</p>
+    <datalist id="baristaList"></datalist>
+  </section>
+
+  <section class="block">
+    <h2 class="step-h"><span class="step-n">1</span>Before steaming</h2>
+    <div class="metric">
+      <label class="lbl" for="cold">Cold volume</label>
+      <div class="metric-row">
+        <div class="num-in"><input id="cold" type="text" inputmode="decimal" autocomplete="off" placeholder="0.0"><span class="unit">oz</span></div>
+      </div>
+      <p class="hint" id="coldHint"></p>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2 class="step-h"><span class="step-n">2</span>After steaming</h2>
+
+    <div class="metric">
+      <label class="lbl" for="steamed">Steamed volume</label>
+      <div class="metric-row">
+        <div class="num-in"><input id="steamed" type="text" inputmode="decimal" autocomplete="off" placeholder="0.0"><span class="unit">oz</span></div>
+      </div>
+    </div>
+
+    <div class="metric">
+      <span class="lbl">Aeration</span>
+      <div class="metric-row">
+        <span class="computed" id="aerVal">—</span>
+        <span class="chip" id="vAer"></span>
+      </div>
+      <div id="gAer"></div>
+      <p class="hint" id="aerNote"></p>
+    </div>
+
+    <div class="metric">
+      <label class="lbl" for="temp">Final temp</label>
+      <div class="metric-row">
+        <div class="num-in"><input id="temp" type="text" inputmode="decimal" autocomplete="off" placeholder="000"><span class="unit">°F</span></div>
+        <span class="chip" id="vTemp"></span>
+      </div>
+      <div id="gTemp"></div>
+    </div>
+
+    <div id="ch-hygiene"></div>
+    <div id="ch-texture"></div>
+  </section>
+
+  <section class="block">
+    <h2 class="step-h"><span class="step-n">3</span>After the pour</h2>
+    <div id="ch-art"></div>
+
+    <div class="metric">
+      <label class="lbl" for="waste">Milk discarded</label>
+      <div class="metric-row">
+        <div class="num-in"><input id="waste" type="text" inputmode="decimal" autocomplete="off" placeholder="0.0"><span class="unit">oz</span></div>
+        <span class="chip" id="vWaste"></span>
+      </div>
+      <div id="gWaste"></div>
+    </div>
+
+    <label class="field" style="margin-bottom:24px">
+      <span class="lbl">Notes</span>
+      <textarea class="in" id="notes" rows="3"></textarea>
+    </label>
+  </section>
+</main>
+
+<main id="historyView" class="wrap" role="tabpanel" aria-labelledby="tabHistory" hidden>
+  <div class="hist-tools">
+    <label class="field">
+      <span class="lbl">Show</span>
+      <select class="in" id="filter"><option value="">All baristas</option></select>
+    </label>
+    <button type="button" class="btn" id="exportBtn">Export CSV</button>
+  </div>
+  <div class="pending" id="pendingBox" hidden>
+    <span id="pendingText"></span>
+    <button type="button" class="btn btn-small" id="exportNew">Export new checks</button>
+  </div>
+  <p class="device-note">Checks are saved in this browser on this device. Export after each session to keep a copy.</p>
+  <p class="hist-meta" id="histMeta"></p>
+  <ol class="hist" id="histList"></ol>
+  <div class="empty" id="histEmpty" hidden>
+    <p>No checks yet. Saved checks show up here, newest first.</p>
+    <button type="button" class="btn" id="emptyStart">Start a check</button>
+  </div>
+</main>
+
+<div class="savebar" id="saveBar">
+  <div class="wrap savebar-inner">
+    <span class="progress" id="progress">0 of 6 scored</span>
+    <button type="button" class="btn btn-primary" id="saveBtn">Save check</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+var $ = function(s){ return document.querySelector(s); };
+var LOCAL_KEY = 'milkcheck.records.v1';
+var DRAFT_KEY = 'milkcheck.draft.v1';
+
+var TIER = {
+  needs:{label:'Needs work', short:'Needs work', sym:'✕'},
+  close:{label:'Close enough', short:'Close', sym:'≈'},
+  just:{label:'Just right', short:'Just right', sym:'✓'}
+};
+var ORDER = ['needs','close','just'];
+
+var CHOICES = {
+  hygiene:{name:'Steam wand hygiene', prio:'Critical', d:{
+    needs:'Wand not wiped, or not purged before or after steaming',
+    close:'Wiped and purged before & after, but wipe delayed',
+    just:'Purged before steaming, then wiped and purged immediately after'}},
+  texture:{name:'Texture', prio:'Need to have', d:{
+    needs:'Large, foamy bubbles or stiff, unincorporated foam',
+    close:'Some small visible bubbles but mostly well-incorporated micro-foam',
+    just:'Smooth glossy micro-foam with wet paint consistency'}},
+  art:{name:'Latte art', prio:'Nice to have / extra credit', d:{
+    needs:'No design, or a washed-out abstract design',
+    close:'Simple heart or monk\u2019s head',
+    just:'Tulip (any number of stacks), rosetta, or other advanced designs'}}
+};
+
+var GAUGES = {
+  temp:{min:130, max:160,
+    zones:[[130,140,'needs'],[140,143,'close'],[143,147,'just'],[147,150,'close'],[150,160,'needs']],
+    ticks:[[140,'140'],[143,'143'],[147,'147'],[150,'150']]},
+  aer:{min:15, max:45,
+    zones:[[15,24.5,'needs'],[24.5,28.5,'close'],[28.5,31.5,'just'],[31.5,35.5,'close'],[35.5,45,'needs']],
+    ticks:[[24.5,'25'],[28.5,'29'],[31.5,'31'],[35.5,'35']]},
+  waste:{min:0, max:5,
+    zones:[[0,1.5,'just'],[1.5,3,'close'],[3,5,'needs']],
+    ticks:[[1.5,'1.5'],[3,'3']]}
+};
+
+/* ---------- helpers ---------- */
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } }
+function lsDel(k){ try{ localStorage.removeItem(k); }catch(e){} }
+function today(){
+  var d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function fmtDate(s){
+  if(!s) return '';
+  var p = s.split('-').map(Number);
+  var dt = new Date(p[0], p[1]-1, p[2]);
+  var o = {weekday:'short', month:'short', day:'numeric'};
+  if(p[0] !== new Date().getFullYear()) o.year = 'numeric';
+  return dt.toLocaleDateString(undefined, o);
+}
+function num(s){
+  if(s == null) return null;
+  s = String(s).replace(',', '.').trim();
+  if(s === '') return null;
+  var n = parseFloat(s);
+  return isFinite(n) ? n : null;
+}
+function fmtN(n){ return String(Math.round(n*100)/100); }
+function newId(){ return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+/* ---------- scoring ---------- */
+function tierTemp(t){
+  if(t == null) return null;
+  if(t < 140 || t > 150) return 'needs';
+  if(t >= 143 && t <= 147) return 'just';
+  return 'close';
+}
+function aerPct(c,s){
+  if(c == null || s == null || c <= 0 || s <= 0 || s < c) return null;
+  return Math.round((s - c) / s * 100);
+}
+function tierAer(p){
+  if(p == null) return null;
+  if(p < 25 || p > 35) return 'needs';
+  if(p >= 29 && p <= 31) return 'just';
+  return 'close';
+}
+function tierWaste(w){
+  if(w == null || w < 0) return null;
+  if(w > 3) return 'needs';
+  if(w <= 1.5) return 'just';
+  return 'close';
+}
+
+/* ---------- build UI ---------- */
+function buildChoice(key){
+  var c = CHOICES[key];
+  var html = '<fieldset class="choice"><legend><span class="lg"><span class="lg-name">' + esc(c.name) +
+    '</span><span class="lg-prio">' + esc(c.prio) + '</span></span></legend><div class="opts">';
+  ORDER.forEach(function(t){
+    html += '<label class="opt" data-tier="' + t + '"><input type="radio" name="' + key + '" value="' + t + '">' +
+      '<span><span class="opt-tier">' + TIER[t].label + '</span><span class="opt-desc">' + esc(c.d[t]) + '</span></span></label>';
+  });
+  html += '</div></fieldset>';
+  $('#ch-' + key).innerHTML = html;
+}
+function buildGauge(sel, cfg){
+  var el = $(sel);
+  var span = cfg.max - cfg.min;
+  var pos = function(v){ return (Math.min(cfg.max, Math.max(cfg.min, v)) - cfg.min) / span * 100; };
+  var zones = cfg.zones.map(function(z){
+    return '<span class="zone z-' + z[2] + '" style="left:' + pos(z[0]) + '%;width:' + (pos(z[1]) - pos(z[0])) + '%"></span>';
+  }).join('');
+  var ticks = cfg.ticks.map(function(t){
+    return '<span class="tick" style="left:' + pos(t[0]) + '%">' + t[1] + '</span>';
+  }).join('');
+  el.innerHTML = '<div class="track" aria-hidden="true"><div class="bar">' + zones + '</div><span class="marker" hidden></span></div>' +
+    '<div class="ticks" aria-hidden="true">' + ticks + '</div>';
+  el._pos = pos;
+}
+function setGauge(sel, v){
+  var el = $(sel), m = el.querySelector('.marker');
+  if(v == null){ m.hidden = true; return; }
+  m.hidden = false;
+  m.style.left = el._pos(v) + '%';
+}
+function setChip(sel, tier){
+  var el = $(sel);
+  el.className = 'chip' + (tier ? ' t-' + tier : '');
+  el.textContent = tier ? TIER[tier].sym + ' ' + TIER[tier].label : '';
+}
+function syncOpts(key){
+  document.querySelectorAll('input[name="' + key + '"]').forEach(function(i){
+    i.closest('.opt').classList.toggle('is-on', i.checked);
+  });
+}
+function radio(key){
+  var i = document.querySelector('input[name="' + key + '"]:checked');
+  return i ? i.value : null;
+}
+
+/* ---------- form state ---------- */
+var editingId = null, editingCreated = null;
+
+function readForm(){
+  return {
+    barista: $('#barista').value.trim(),
+    date: $('#date').value || today(),
+    tempF: num($('#temp').value),
+    coldOz: num($('#cold').value),
+    steamedOz: num($('#steamed').value),
+    wasteOz: num($('#waste').value),
+    hygiene: radio('hygiene'),
+    texture: radio('texture'),
+    art: radio('art'),
+    notes: $('#notes').value.trim()
+  };
+}
+function setNum(sel, v){ $(sel).value = (v == null ? '' : fmtN(v)); }
+function fill(r){
+  $('#barista').value = r.barista || '';
+  $('#date').value = r.date || today();
+  setNum('#temp', r.tempF); setNum('#cold', r.coldOz); setNum('#steamed', r.steamedOz); setNum('#waste', r.wasteOz);
+  ['hygiene','texture','art'].forEach(function(k){
+    document.querySelectorAll('input[name="' + k + '"]').forEach(function(i){ i.checked = (i.value === r[k]); });
+    syncOpts(k);
+  });
+  $('#notes').value = r.notes || '';
+  update();
+}
+function update(){
+  var f = readForm();
+
+  var c = f.coldOz;
+  if(c != null && c > 0){
+    var lo = Math.ceil(c / 0.71 * 10) / 10, hi = Math.floor(c / 0.69 * 10) / 10;
+    $('#coldHint').textContent = 'Steam to ' + lo.toFixed(1) + '\u2013' + hi.toFixed(1) + ' oz for 29\u201331% aeration.';
+  } else {
+    $('#coldHint').textContent = 'For 30% aeration in a 16 oz cup, start with about 11.2 oz.';
+  }
+
+  var p = aerPct(f.coldOz, f.steamedOz);
+  var tA = tierAer(p);
+  $('#aerVal').textContent = p == null ? '\u2014' : p + '%';
+  setChip('#vAer', tA); setGauge('#gAer', p);
+  var note = '';
+  if(f.coldOz != null && f.steamedOz != null && p == null) note = 'Steamed volume should be higher than cold volume.';
+  else if(f.coldOz == null && f.steamedOz == null) note = 'Calculated from the cold and steamed volumes.';
+  else if(f.coldOz == null) note = 'Add the cold volume in step 1.';
+  $('#aerNote').textContent = note;
+
+  var tT = tierTemp(f.tempF);
+  setChip('#vTemp', tT); setGauge('#gTemp', f.tempF);
+
+  var tW = tierWaste(f.wasteOz);
+  setChip('#vWaste', tW); setGauge('#gWaste', f.wasteOz);
+
+  var scored = [tT, tA, tW, f.hygiene, f.texture, f.art].filter(Boolean).length;
+  $('#progress').textContent = scored + ' of 6 scored';
+}
+
+/* ---------- draft (this phone only) ---------- */
+var draftTimer = null;
+function saveDraftNow(){
+  clearTimeout(draftTimer);
+  if(editingId) return;
+  var f = readForm();
+  var any = f.barista || f.tempF != null || f.coldOz != null || f.steamedOz != null || f.wasteOz != null ||
+    f.hygiene || f.texture || f.art || f.notes;
+  if(any) lsSet(DRAFT_KEY, JSON.stringify(f)); else lsDel(DRAFT_KEY);
+}
+function queueDraft(){
+  if(editingId) return;
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(saveDraftNow, 400);
+}
+function restoreDraft(){
+  var raw = lsGet(DRAFT_KEY);
+  if(!raw) return false;
+  try{ fill(JSON.parse(raw)); return true; }catch(e){ return false; }
+}
+function resetForm(){
+  editingId = null; editingCreated = null;
+  fill({date: today()});
+  $('#editBanner').hidden = true;
+  $('#saveBtn').textContent = 'Save check';
+  $('#nameErr').hidden = true;
+}
+
+/* ---------- storage (this browser only) ---------- */
+var records = [], loaded = false;
+
+function setSync(text, warn){
+  var el = $('#sync');
+  el.textContent = text;
+  el.classList.toggle('is-warn', !!warn);
+}
+function loadStore(){
+  var raw = lsGet(LOCAL_KEY);
+  try{ var a = raw ? JSON.parse(raw) : []; records = Array.isArray(a) ? a : []; }catch(e){ records = []; }
+  loaded = true;
+  renderData();
+}
+function writeStore(){
+  if(!lsSet(LOCAL_KEY, JSON.stringify(records))){
+    throw new Error('This browser blocked saving. Private Browsing may be on.');
+  }
+}
+async function persist(rec){
+  var prev = records.slice();
+  var i = records.findIndex(function(r){ return r.id === rec.id; });
+  if(i >= 0) records[i] = rec; else records.push(rec);
+  try{ writeStore(); }catch(e){ records = prev; throw e; }
+  renderData();
+}
+async function removeRec(id){
+  records = records.filter(function(r){ return r.id !== id; });
+  writeStore();
+  renderData();
+}
+function unexported(){
+  return sorted().filter(function(r){ return !r.exportedAt; });
+}
+function markExported(rows){
+  var ids = new Set(rows.map(function(r){ return r.id; }));
+  var now = Date.now();
+  records = records.map(function(r){ return ids.has(r.id) ? Object.assign({}, r, {exportedAt: now}) : r; });
+  try{ writeStore(); }catch(e){}
+  renderData();
+}
+
+/* ---------- history ---------- */
+var openIds = new Set();
+
+function nameKey(n){ return (n || '').trim().toLowerCase(); }
+function sorted(){
+  return records.slice().sort(function(a,b){
+    return (b.date || '').localeCompare(a.date || '') || ((b.createdAt || 0) - (a.createdAt || 0));
+  });
+}
+function names(){
+  var m = new Map();
+  sorted().forEach(function(r){
+    var k = nameKey(r.barista);
+    if(k && !m.has(k)) m.set(k, r.barista.trim());
+  });
+  return Array.from(m.entries()).map(function(e){ return {k:e[0], l:e[1]}; })
+    .sort(function(a,b){ return a.l.localeCompare(b.l); });
+}
+function filtered(){
+  var f = $('#filter').value;
+  var s = sorted();
+  return f ? s.filter(function(r){ return nameKey(r.barista) === f; }) : s;
+}
+function mini(label, tier, val){
+  var t = tier ? TIER[tier] : null;
+  var v = val != null ? val : (t ? t.short : '\u2014');
+  return '<span class="mini' + (t ? ' t-' + tier : '') + '"><span class="mini-l">' + label + '</span>' +
+    '<span class="mini-v">' + (t ? t.sym + ' ' : '') + esc(v) + '</span></span>';
+}
+function recHTML(r){
+  var p = aerPct(r.coldOz, r.steamedOz);
+  var open = openIds.has(r.id);
+  var minis = [
+    mini('Temp', tierTemp(r.tempF), r.tempF != null ? fmtN(r.tempF) + '\u00B0F' : null),
+    mini('Wand', r.hygiene, null),
+    mini('Texture', r.texture, null),
+    mini('Aeration', tierAer(p), p != null ? p + '%' : null),
+    mini('Waste', tierWaste(r.wasteOz), r.wasteOz != null ? fmtN(r.wasteOz) + ' oz' : null),
+    mini('Latte art', r.art, null)
+  ].join('');
+  var vol = (r.coldOz != null ? fmtN(r.coldOz) + ' oz cold' : 'Cold not recorded') + ', ' +
+    (r.steamedOz != null ? fmtN(r.steamedOz) + ' oz steamed' : 'steamed not recorded');
+  return '<li class="rec">' +
+    '<button type="button" class="rec-head" data-id="' + esc(r.id) + '" aria-expanded="' + open + '">' +
+      '<span class="rec-top"><span class="rec-name">' + esc(r.barista || 'Unnamed') + '</span>' +
+      '<span class="rec-date">' + esc(fmtDate(r.date)) + '</span></span>' +
+      '<span class="minis">' + minis + '</span>' +
+    '</button>' +
+    '<div class="rec-detail"' + (open ? '' : ' hidden') + '>' +
+      '<dl><dt>Volumes</dt><dd>' + esc(vol) + '</dd>' +
+      (r.notes ? '<dt>Notes</dt><dd>' + esc(r.notes) + '</dd>' : '') + '</dl>' +
+      '<div class="rec-actions"><button type="button" class="btn btn-small" data-edit="' + esc(r.id) + '">Edit</button>' +
+      '<button type="button" class="btn btn-small btn-danger" data-del="' + esc(r.id) + '">Delete</button></div>' +
+    '</div></li>';
+}
+function renderHistory(){
+  var sel = $('#filter'), cur = sel.value;
+  var ns = names();
+  sel.innerHTML = '<option value="">All baristas</option>' +
+    ns.map(function(n){ return '<option value="' + esc(n.k) + '">' + esc(n.l) + '</option>'; }).join('');
+  sel.value = ns.some(function(n){ return n.k === cur; }) ? cur : '';
+
+  var list = $('#histList'), meta = $('#histMeta'), empty = $('#histEmpty');
+  if(!loaded){
+    list.innerHTML = ''; empty.hidden = true;
+    meta.textContent = 'Loading checks\u2026';
+    $('#exportBtn').disabled = true;
+    return;
+  }
+  var rows = filtered();
+  empty.hidden = records.length > 0;
+  meta.hidden = records.length === 0;
+  if(records.length){
+    var who = sel.value ? ' for ' + sel.options[sel.selectedIndex].text : '';
+    meta.textContent = rows.length + (rows.length === 1 ? ' check' : ' checks') + who + '. Tap one for volumes, notes, and edits.';
+  }
+  list.innerHTML = rows.map(recHTML).join('');
+  $('#exportBtn').disabled = rows.length === 0;
+}
+function renderData(){
+  renderHistory();
+  $('#baristaList').innerHTML = names().map(function(n){ return '<option value="' + esc(n.l) + '"></option>'; }).join('');
+  $('#histCount').textContent = loaded && records.length ? '(' + records.length + ')' : '';
+  var pend = unexported().length;
+  setSync(records.length ? (pend ? pend + ' not exported' : 'All exported') : '', pend > 0);
+  $('#pendingBox').hidden = pend === 0;
+  $('#pendingText').textContent = pend === 1 ? '1 check hasn\u2019t been exported' : pend + ' checks haven\u2019t been exported';
+}
+
+/* ---------- views & actions ---------- */
+function showView(v){
+  var f = v === 'form';
+  $('#formView').hidden = !f;
+  $('#historyView').hidden = f;
+  $('#saveBar').hidden = !f;
+  $('#tabForm').setAttribute('aria-selected', String(f));
+  $('#tabHistory').setAttribute('aria-selected', String(!f));
+  document.body.classList.toggle('form-mode', f);
+  window.scrollTo(0, 0);
+}
+var toastTimer = null;
+function toast(msg, isErr){
+  var t = $('#toast');
+  t.textContent = msg;
+  t.classList.toggle('is-err', !!isErr);
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, isErr ? 5000 : 2600);
+}
+function startEdit(id){
+  var r = records.find(function(x){ return x.id === id; });
+  if(!r) return;
+  saveDraftNow();
+  editingId = r.id;
+  editingCreated = r.createdAt || Date.now();
+  fill(r);
+  $('#editWho').textContent = (r.barista || 'Unnamed') + ', ' + fmtDate(r.date);
+  $('#editBanner').hidden = false;
+  $('#saveBtn').textContent = 'Save changes';
+  $('#nameErr').hidden = true;
+  showView('form');
+}
+async function onSave(){
+  var f = readForm();
+  if(!f.barista){
+    $('#nameErr').hidden = false;
+    $('#barista').focus();
+    return;
+  }
+  var wasEditing = !!editingId;
+  var now = Date.now();
+  var rec = Object.assign({id: editingId || newId()}, f, {createdAt: editingCreated || now, updatedAt: now});
+  var btn = $('#saveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving\u2026';
+  try{
+    await persist(rec);
+    if(wasEditing){
+      resetForm();
+      restoreDraft();
+      showView('history');
+      toast('Changes saved');
+    } else {
+      lsDel(DRAFT_KEY);
+      resetForm();
+      window.scrollTo(0, 0);
+      toast('Check saved for ' + f.barista);
+    }
+  }catch(e){
+    btn.textContent = wasEditing ? 'Save changes' : 'Save check';
+    toast('Check not saved. ' + ((e && e.message) || 'Try again.'), true);
+  }finally{
+    btn.disabled = false;
+  }
+}
+function csvCell(v){
+  if(v == null) return '';
+  var s = String(v);
+  return /[",\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+function toCSV(rows){
+  var L = function(t){ return t ? TIER[t].label : ''; };
+  var lines = [['Date','Barista','Final temp (F)','Temp result','Cold volume (oz)','Steamed volume (oz)','Aeration (%)',
+    'Aeration result','Milk discarded (oz)','Waste result','Steam wand hygiene','Texture','Latte art','Notes'].join(',')];
+  rows.forEach(function(r){
+    var p = aerPct(r.coldOz, r.steamedOz);
+    lines.push([r.date, r.barista, r.tempF, L(tierTemp(r.tempF)), r.coldOz, r.steamedOz, p, L(tierAer(p)),
+      r.wasteOz, L(tierWaste(r.wasteOz)), L(r.hygiene), L(r.texture), L(r.art), r.notes].map(csvCell).join(','));
+  });
+  return '\uFEFF' + lines.join('\r\n');
+}
+function stamp(){
+  var d = new Date();
+  return today() + '-' + String(d.getHours()).padStart(2,'0') + String(d.getMinutes()).padStart(2,'0');
+}
+async function exportRows(rows){
+  if(!rows.length) return;
+  var name = 'milk-checks-' + stamp() + '.csv';
+  var csv = toCSV(rows);
+  var shared = false;
+  var touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+  if(touch && navigator.canShare && typeof File === 'function'){
+    try{
+      var file = new File([csv], name, {type: 'text/csv'});
+      if(navigator.canShare({files: [file]})){
+        await navigator.share({files: [file], title: name});
+        shared = true;
+      }
+    }catch(e){
+      if(e && e.name === 'AbortError') return;
+    }
+  }
+  if(!shared){
+    try{
+      var url = URL.createObjectURL(new Blob([csv], {type: 'text/csv'}));
+      var a = document.createElement('a');
+      a.href = url; a.download = name;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 10000);
+    }catch(e){
+      toast('Export failed. ' + ((e && e.message) || ''), true);
+      return;
+    }
+  }
+  markExported(rows);
+  toast('Exported ' + rows.length + (rows.length === 1 ? ' check' : ' checks'));
+}
+function onExport(){ exportRows(filtered()); }
+
+/* ---------- wire up ---------- */
+['hygiene','texture','art'].forEach(buildChoice);
+buildGauge('#gTemp', GAUGES.temp);
+buildGauge('#gAer', GAUGES.aer);
+buildGauge('#gWaste', GAUGES.waste);
+
+$('#formView').addEventListener('input', function(e){
+  if(e.target.id === 'barista') $('#nameErr').hidden = true;
+  update(); queueDraft();
+});
+$('#formView').addEventListener('change', function(e){
+  if(e.target.type === 'radio') syncOpts(e.target.name);
+  update(); queueDraft();
+});
+$('#saveBtn').addEventListener('click', onSave);
+$('#cancelEdit').addEventListener('click', function(){ resetForm(); restoreDraft(); });
+$('#tabForm').addEventListener('click', function(){ showView('form'); });
+$('#tabHistory').addEventListener('click', function(){ showView('history'); });
+$('#emptyStart').addEventListener('click', function(){ showView('form'); });
+$('#filter').addEventListener('change', renderHistory);
+$('#exportBtn').addEventListener('click', onExport);
+
+$('#histList').addEventListener('click', function(e){
+  var head = e.target.closest('.rec-head');
+  if(head){
+    var id = head.dataset.id;
+    if(openIds.has(id)) openIds.delete(id); else openIds.add(id);
+    var isOpen = openIds.has(id);
+    head.setAttribute('aria-expanded', String(isOpen));
+    head.parentElement.querySelector('.rec-detail').hidden = !isOpen;
+    return;
+  }
+  var ed = e.target.closest('[data-edit]');
+  if(ed){ startEdit(ed.dataset.edit); return; }
+  var del = e.target.closest('[data-del]');
+  if(del){
+    if(del.classList.contains('is-armed')){
+      var did = del.dataset.del;
+      del.disabled = true;
+      removeRec(did).then(function(){
+        openIds.delete(did);
+        toast('Check deleted');
+      }).catch(function(err){
+        del.disabled = false;
+        toast('Check not deleted. ' + ((err && err.message) || 'Try again.'), true);
+      });
+    } else {
+      del.classList.add('is-armed');
+      del.textContent = 'Tap again to delete';
+      setTimeout(function(){
+        if(del.isConnected && !del.disabled){ del.classList.remove('is-armed'); del.textContent = 'Delete'; }
+      }, 4000);
+    }
+  }
+});
+
+$('#date').value = today();
+if(!restoreDraft()) update();
+renderHistory();
+$('#exportNew').addEventListener('click', function(){ exportRows(unexported()); });
+loadStore();
+})();
+</script>
+</body>
+</html>
