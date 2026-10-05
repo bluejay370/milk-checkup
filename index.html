@@ -139,7 +139,20 @@ textarea.in{min-height:96px;resize:vertical;line-height:1.4}
 
 .savebar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--surface);border-top:1px solid var(--line);padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
 .savebar-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.progress{color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums}
+.progress{color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums;flex:1;min-width:0}
+.savebar-actions{display:flex;gap:8px;flex:none}
+.savebar .btn{min-height:48px}
+.progress{white-space:nowrap}
+@media (max-width:400px){
+  .p-word{display:none}
+  .savebar .btn{padding:10px 13px}
+  .savebar .btn-primary{min-width:0}
+}
+@media (max-width:340px){
+  .savebar .btn{padding:10px 10px;font-size:15px}
+}
+.savebar .btn-primary{min-width:120px}
+#clearBtn.is-armed{background:var(--needs);color:var(--surface);border-color:var(--needs)}
 
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:500;font-size:15px;max-width:calc(100% - 32px);width:max-content;z-index:20;opacity:0;pointer-events:none;transition:opacity .2s}
 body:not(.form-mode) .toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
@@ -308,8 +321,11 @@ body:not(.form-mode) .toast{bottom:calc(20px + env(safe-area-inset-bottom,0px))}
 
 <div class="savebar" id="saveBar">
   <div class="wrap savebar-inner">
-    <span class="progress" id="progress">0 of 6 scored</span>
-    <button type="button" class="btn btn-primary" id="saveBtn">Save check</button>
+    <span class="progress" id="progress">0 of 6<span class="p-word"> scored</span></span>
+    <div class="savebar-actions">
+      <button type="button" class="btn" id="clearBtn">Clear</button>
+      <button type="button" class="btn btn-primary" id="saveBtn">Save check</button>
+    </div>
   </div>
 </div>
 
@@ -516,7 +532,21 @@ function update(){
   setChip('#vWaste', tW); setGauge('#gWaste', f.wasteOz);
 
   var scored = [tT, tA, tW, f.hygiene, f.texture, f.art].filter(Boolean).length;
-  $('#progress').textContent = scored + ' of 6 scored';
+  $('#progress').innerHTML = scored + ' of 6<span class="p-word"> scored</span>';
+
+  var any = f.barista || f.tempF != null || f.coldOz != null || f.steamedOz != null || f.wasteOz != null ||
+    f.hygiene || f.texture || f.art || f.notes;
+  var cb = $('#clearBtn');
+  cb.hidden = !!editingId;
+  cb.disabled = !any;
+  if(!any) disarmClear();
+}
+var clearTimer = null;
+function disarmClear(){
+  var b = $('#clearBtn');
+  clearTimeout(clearTimer);
+  b.classList.remove('is-armed');
+  b.textContent = 'Clear';
 }
 
 /* ---------- draft (this phone only) ---------- */
@@ -813,6 +843,21 @@ $('#formView').addEventListener('change', function(e){
   update(); queueDraft();
 });
 $('#saveBtn').addEventListener('click', onSave);
+$('#clearBtn').addEventListener('click', function(){
+  var b = $('#clearBtn');
+  if(b.classList.contains('is-armed')){
+    disarmClear();
+    clearTimeout(draftTimer);
+    lsDel(DRAFT_KEY);
+    resetForm();
+    window.scrollTo(0, 0);
+    toast('Form cleared');
+  } else {
+    b.classList.add('is-armed');
+    b.textContent = 'Clear all?';
+    clearTimer = setTimeout(disarmClear, 4000);
+  }
+});
 $('#cancelEdit').addEventListener('click', function(){ resetForm(); restoreDraft(); });
 $('#tabForm').addEventListener('click', function(){ showView('form'); });
 $('#tabHistory').addEventListener('click', function(){ showView('history'); });
